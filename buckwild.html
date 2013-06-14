@@ -13,8 +13,8 @@
   <body>
 
     <script>
-      var width = 2000,
-          height = 1000;
+      var width = 3600,
+          height = 1800;
 
       //var color = d3.scale.category20();
 
@@ -28,6 +28,7 @@
       var force = d3.layout.force()
           .size([width, height])
           .charge(-2000)
+	  .gravity(0.75)
           .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 50; })
           .start();
 
