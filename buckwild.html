@@ -1,130 +1,165 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
 
-.link line {
-  stroke: #696969;
-}
+<html>
+  <head>
+    <meta charset="utf-8">
 
-.link line.separator {
-  stroke: #fff;
-  stroke-width: 2px;
-}
+    <link rel="stylesheet" type="css/text" href="css/styles.css">
+    <link rel="stylesheet" type="css/text" href="css/pulse.css">
+    <script src="http://d3js.org/d3.v2.min.js?2.9.6"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+  </head>
 
-.node circle {
-  stroke: #000;
-  stroke-width: 1.5px;
-}
+  <body>
 
-.node text {
-  font: 10px sans-serif;
-  pointer-events: none;
-}
+    <script>
+      var width = 3600,
+          height = 1800;
 
-</style>
-<body>
-<script src="http://d3js.org/d3.v2.min.js?2.9.6"></script>
-<script src="http://underscorejs.org/underscore-min.js"></script>
-<script>
+      //var color = d3.scale.category20();
 
-var width = 960,
-    height = 500;
+      var radius = d3.scale.sqrt()
+          .range([0, 6]);
 
-var color = d3.scale.category20();
+      var svg = d3.select("body").append("svg")
+          .attr("width", width)
+          .attr("height", height);
 
-var radius = d3.scale.sqrt()
-    .range([0, 6]);
+      var force = d3.layout.force()
+          .size([width, height])
+          .charge(-2000)
+	  .gravity(0.75)
+          .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 50; })
+          .start();
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+      d3.json("http://blackjohn.local:3000/buckwild/data_live", function(graph) {
+        var nodeMap = {}
+        var nodes = []
+        _.map(graph.brands, function(brand) {
+          var brandNode = {}
+          brandNode.name = brand.name
+          brandNode.type = 'brand'
+          brandNode.size = brand.sites.length
+          nodes.push(brandNode)
+          nodeMap[brandNode.name] = nodes.length-1
 
-var force = d3.layout.force()
-    .size([width, height])
-    .charge(-600)
-    .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 20; });
+          _.map(brand.sites, function(site) {
+            if (nodeMap[site.name] === undefined) {
+              var siteNode = {}
+              siteNode.name = site.name
+              siteNode.type = 'site'
+              siteNode.size = site.jobs_index
+              nodes.push(siteNode)
 
+              nodeMap[siteNode.name] = nodes.length - 1
+            }
+          })
+        })
 
-d3.json("http://blackjohn.local:3000/buckwild/data", function(graph) {
-  var nodeMap = {}
-  var nodes = []
-  _.map(graph.brands, function(brand) {
-    var brandNode = {}
-    brandNode.name = brand.name
-    brandNode.type = 'brand'
-    brandNode.size = brand.sites.length
-    nodes.push(brandNode)
-    nodeMap[brandNode.name] = nodes.length-1
+        var links = []
+        _.map(graph.brands, function(brand) {
+          _.map(brand.sites, function(site) {
+            var link = {}
+            link.source = nodeMap[brand.name]
+            link.target = nodeMap[site.name]
+            link.bond = (site.integrated == true) ? 2 : 1 
+            links.push(link)
+          })
+        }) 
 
-    _.map(brand.sites, function(site) {
-      if (nodeMap[site.name] === undefined) {
-        var siteNode = {}
-        siteNode.name = site.name
-        siteNode.type = 'site'
-        siteNode.size = site.jobs_per_day
-        nodes.push(siteNode)
+        force
+            .nodes(nodes)
+            .links(links)
+            .on("tick", tick)
+            .start();
 
-        nodeMap[siteNode.name] = nodes.length - 1
-      }
-    })
-  })
+        var link = svg.selectAll(".link")
+            .data(links)
+          .enter().append("g")
+            .attr("class", "link");
 
-  var links = []
-  _.map(graph.brands, function(brand) {
-    _.map(brand.sites, function(site) {
-      var link = {}
-      link.source = nodeMap[brand.name]
-      link.target = nodeMap[site.name]
-      link.bond = (site.integrated == true) ? 2 : 1 
-      links.push(link)
-    })
-  }) 
+        link.append("line")
+            .style("stroke-width", function(d) { return (d.bond * 2 - 1) * 2 + "px"; });
 
-  force
-      .nodes(nodes)
-      .links(links)
-      .on("tick", tick)
-      .start();
+        link.filter(function(d) { return d.bond > 1; }).append("line")
+            .attr("class", "separator");
 
-  var link = svg.selectAll(".link")
-      .data(links)
-    .enter().append("g")
-      .attr("class", "link");
+        var node = svg.selectAll(".node")
+            .data(nodes)
+          .enter().append("g")
+            .attr("class", "node")
+            .call(force.drag);
+        node.append("circle")
+            .attr("r", function(d) { 
+              if (d.type == 'brand') {
+                return radius(d.size) * 4
+              } else {
+                return 15
+              }
+            });
+            //.style("fill", function(d) { return color(d.name); });
 
-  link.append("line")
-      .style("stroke-width", function(d) { return (d.bond * 2 - 1) * 2 + "px"; });
+        node.select(function(d, i) {
+            if(d.type == "brand" & d.size > 1) return this;
+          }).append("text")
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .style("font-size", function(d) {
+              return (d.size/5) + "rem";
+            })
+            .text(function(d) { return d.name; });
 
-  link.filter(function(d) { return d.bond > 1; }).append("line")
-      .attr("class", "separator");
+        // adding site name as a title element
+        node.append("title")
+                .text(function(d) { return d.name; });
 
-  var node = svg.selectAll(".node")
-      .data(nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .call(force.drag);
-  node.append("circle")
-      .attr("r", function(d) { 
-        if (d.type == 'brand') {
-          return radius(d.size) * 2
-        } else {
-          return 2
+        // adding .brand classes to brand nodes
+        node.classed("brand", function(d){
+          if(d.type == "brand") return true;
+          else return false;
+        });
+
+        // adding .site classes to brand nodes
+        node.classed("site", function(d){
+          if(d.type == "site") return true;
+          else return false;
+        });
+
+        // adding pulse classes
+        node.each(function(d, i){
+          if(d.type == "site") {
+            switch(d.size) {
+              case 1:
+                d3.select(this).select("circle").classed("pulse-x1",true);
+                break;
+              case 2:
+                d3.select(this).select("circle").classed("pulse-x2",true);
+                break;
+              case 3:
+                d3.select(this).select("circle").classed("pulse-x3",true);
+                break;
+              case 4:
+                d3.select(this).select("circle").classed("pulse-x4",true);
+                break;
+              case 5:
+                d3.select(this).select("circle").classed("pulse-x5",true);
+                break;
+              default:
+                ;
+            }
+          }
+        });
+
+        function tick() {
+          link.selectAll("line")
+              .attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+
+          node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
         }
-      })
-      .style("fill", function(d) { return color(d.name); });
-
-  node.append("text")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; });
-
-  function tick() {
-    link.selectAll("line")
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  }
-});
-</script>
+      });
+    </script>
+  </body>
+</html>
