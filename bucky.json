@@ -1,11 +1,11 @@
 {
   "brands": [
-    {"type": "brand", "name": "Kraft", "number_of_sites": 3, "sites": [
+    {"type": "brand", "name": "Kraft", "sites": [
       {"type": "site", "name": "Strive Morris", "jobs_per_day": 5, "integrated": true},
       {"type": "site", "name": "Strive Westway", "jobs_per_day": 10, "integrated": false}, 
       {"type": "site", "name": "Strive Aurora", "jobs_per_day": 20, "integrated": true} 
       ]},
-    {"type": "brand", "name": "Frito Lay", "number_of_sites": 2, "sites": [
+    {"type": "brand", "name": "Frito Lay", "sites": [
       {"type": "site", "name": "DePaul", "jobs_per_day": 1, "integrated": false},
       {"type": "site", "name": "Strive Aurora", "jobs_per_day": 200, "integrated": true}
     ]}
