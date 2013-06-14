@@ -118,10 +118,10 @@ svg circle.pulse-x5 {
 
 @-webkit-keyframes link-pulse {
   0% {
-    stroke: #2E3641;
+    stroke: #C82926;
   }
 
-  20% {
+  25% {
     stroke: white;
   }
 

@@ -22,8 +22,8 @@ svg {
 }
 
 .link line.separator {
-  stroke: white;
-  stroke-width: 5px;
+  stroke: #C82926;
+  stroke-width: 3px;
 }
 
 .node circle {
@@ -41,6 +41,7 @@ svg {
 }
 
 .node text {
-  font: 12px Helvetica, sans-serif;
-  color: white;
+  font-size: 12px;
+  font-family: Helvetica, sans-serif;
+  fill: #2E3641;
 }
