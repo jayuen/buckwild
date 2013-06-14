@@ -1,0 +1,133 @@
+
+/* f = 1/2s = 0.5Hz */ 
+svg circle.pulse-x1 {
+  -webkit-animation: pulse-x1 2s ease 2s infinite alternate;
+}
+
+/* f = 2/2s = 1Hz */
+svg circle.pulse-x2 {
+  -webkit-animation: pulse-x2 1s ease 2s infinite alternate;
+}
+
+/* f = 4/2s = 2Hz */
+svg circle.pulse-x3 {
+  -webkit-animation: pulse-x3 0.5s ease 2s infinite alternate;
+}
+
+/* f = 8/2s = 4Hz */
+svg circle.pulse-x4 {
+  -webkit-animation: pulse-x4 0.25s ease 2s infinite alternate;
+}
+
+/* f = 16/2s = 8Hz */
+svg circle.pulse-x5 {
+  -webkit-animation: pulse-x5 0.125s ease 2s infinite alternate;
+}
+
+.link line.separator {
+  -webkit-animation: link-pulse 0.5s ease 2s infinite alternate;
+}
+
+
+
+@-webkit-keyframes pulse-x1 {
+  0% {
+    fill: PaleTurquoise;
+    -webkit-transform: scale(1.1);
+  }
+
+  10% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes pulse-x2 {
+  0% {
+    fill: PaleTurquoise;
+    -webkit-transform: scale(1.1);
+  }
+
+  20% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes pulse-x3 {
+  0% {
+    fill: PaleTurquoise;
+    -webkit-transform: scale(1.1);
+  }
+
+  30% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes pulse-x4 {
+  0% {
+    fill: PaleTurquoise;
+    -webkit-transform: scale(1.1);
+  }
+
+  40% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+}
+
+@-webkit-keyframes pulse-x5 {
+  0% {
+    fill: PaleTurquoise;
+    -webkit-transform: scale(1.1);
+  }
+
+  50% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    fill: LightSkyBlue;
+    -webkit-transform: scale(1);
+  }
+}
+
+
+@-webkit-keyframes link-pulse {
+  0% {
+    stroke: #2E3641;
+  }
+
+  20% {
+    stroke: white;
+  }
+
+  100% {
+    stroke: white;
+  }
+}
+
+

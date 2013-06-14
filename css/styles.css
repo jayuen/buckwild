@@ -1,0 +1,46 @@
+
+html,body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #2E3641;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+
+.link line {
+  stroke: white;
+}
+
+.link line.separator {
+  stroke: white;
+  stroke-width: 5px;
+}
+
+.node circle {
+  stroke: #2E3641;
+  stroke-width: 3px;
+  -webkit-transform-origin: 50% 50%;
+}
+
+.node.brand circle {
+  fill: #EFD13B;
+}
+
+.node.site circle {
+  fill: LightBlue;
+}
+
+.node text {
+  font: 12px Helvetica, sans-serif;
+  color: white;
+}
